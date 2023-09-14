@@ -1,12 +1,30 @@
 const { hash, compare } = require("bcryptjs");
 const AppError = require("../utils/AppError");
 
-class UserUpdateService {
+class UserServices {
   constructor(userRepository) {
     this.userRepository = userRepository;
   }
 
-  async execute({ name, email, password, old_password, user_id }) {
+  async create({ name, email, password }) {
+    const checkUserExists = await this.userRepository.findByEmail(email);
+
+    if (checkUserExists.length > 0) {
+      throw new AppError("Este e-mail já está em uso.");
+    }
+
+    const hashedPassword = await hash(password, 8);
+
+    const userCreated = await this.userRepository.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    return userCreated;
+  }
+
+  async update({ name, email, password, old_password, user_id }) {
     const checkUserExists = await this.userRepository.findById(user_id);
 
     if (checkUserExists.length < 0) {
@@ -42,8 +60,12 @@ class UserUpdateService {
 
     const confirm = await this.userRepository.update(user);
 
-    return confirm;
+    if (!confirm) {
+      throw new AppError("Erro ao salvar", 500);
+    }
+
+    return;
   }
 }
 
-module.exports = UserUpdateService;
+module.exports = UserServices;
