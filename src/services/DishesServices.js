@@ -1,6 +1,6 @@
 const AppError = require("../utils/AppError");
 
-class DishesCreateService {
+class DishesServices {
   constructor(dishesRepository) {
     this.dishesRepository = dishesRepository;
   }
@@ -68,8 +68,7 @@ class DishesCreateService {
     if (!confirmDishUpdate) {
       throw new AppError("Erro ao atualizar prato.", 500);
     }
-    
   }
 }
 
-module.exports = DishesCreateService;
+module.exports = DishesServices;
