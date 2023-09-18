@@ -40,7 +40,24 @@ class DishesController {
     return response.status(201).json(dishes);
   }
 
-  async update(request, response) {}
+  async update(request, response) {
+    const { name, category, description, price, ingredients } = request.body;
+    const { id } = request.params;
+
+    const dishesRepository = new DishesRepository();
+    const dishesServices = new DishesServices(dishesRepository);
+
+    await dishesServices.update({
+      id,
+      name,
+      category,
+      description,
+      price,
+      ingredients,
+    });
+
+    return response.status(201).json();
+  }
 
   async delete(request, response) {
     const { id } = request.params;

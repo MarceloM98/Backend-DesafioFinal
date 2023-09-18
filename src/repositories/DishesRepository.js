@@ -54,6 +54,35 @@ class DishesRepository {
     const confirm = await knex("dishes").where({ id }).limit(1).del();
     return confirm;
   }
+
+  async updateDish(dish) {
+    const dishId = dish.id;
+    const updateConfirm = await knex("dishes").where({ id: dishId }).update({
+      name: dish.name,
+      category: dish.category,
+      description: dish.description,
+      price: dish.price,
+    });
+
+    await knex("ingredients").where({ dish_id: dishId }).del();
+
+    const ingredientsInsert = dish.ingredients.map((ingredient) => {
+      return {
+        dish_id: dishId,
+        name: ingredient,
+      };
+    });
+
+    const confirmIngredients = await knex("ingredients").insert(
+      ingredientsInsert
+    );
+
+    if (!updateConfirm || !confirmIngredients) {
+      return false;
+    }
+
+    return true;
+  }
 }
 
 module.exports = DishesRepository;

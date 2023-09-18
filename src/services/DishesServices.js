@@ -53,6 +53,23 @@ class DishesCreateService {
       throw new AppError("Falha ao deletar prato", 500);
     }
   }
+
+  async update({ id, name, category, description, price, ingredients }) {
+    const dish = await this.dishesRepository.show(id);
+
+    dish.name = name ?? dish.name;
+    dish.category = category ?? dish.category;
+    dish.description = description ?? dish.description;
+    dish.price = price ?? dish.price;
+    dish.ingredients = ingredients ?? dish.ingredients;
+
+    const confirmDishUpdate = await this.dishesRepository.updateDish(dish);
+
+    if (!confirmDishUpdate) {
+      throw new AppError("Erro ao atualizar prato.", 500);
+    }
+    
+  }
 }
 
 module.exports = DishesCreateService;
