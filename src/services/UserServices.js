@@ -31,11 +31,11 @@ class UserServices {
       throw new AppError("Usuário não encontrado.", 401);
     }
 
-    const user = checkUserExists[0];
+    const user = checkUserExists;
 
     const checkEmail = await this.userRepository.findByEmail(email);
 
-    if (checkEmail.length > 0 && checkEmail[0].email === email) {
+    if (checkEmail.length > 0 && checkEmail[0].id !== user_id) {
       throw new AppError("Este email já está em uso.", 401);
     }
 
@@ -65,6 +65,15 @@ class UserServices {
     }
 
     return;
+  }
+
+  async validate(userId) {
+    const checkUserExists = await this.userRepository.findById(userId);
+
+    if (checkUserExists.length === 0) {
+      throw new AppError("Unauthorized", 401);
+    }
+    return checkUserExists;
   }
 }
 

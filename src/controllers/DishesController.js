@@ -8,7 +8,7 @@ class DishesController {
     const dishesRepository = new DishesRepository();
     const dishesServices = new DishesServices(dishesRepository);
 
-    await dishesServices.create({
+    const dish_id = await dishesServices.create({
       name,
       category,
       description,
@@ -16,7 +16,7 @@ class DishesController {
       ingredients,
     });
 
-    return response.status(201).json();
+    return response.status(201).json(dish_id);
   }
 
   async show(request, response) {
@@ -65,6 +65,18 @@ class DishesController {
     const dishesRepository = new DishesRepository();
     const dishesServices = new DishesServices(dishesRepository);
     await dishesServices.delete(id);
+
+    return response.status(201).json();
+  }
+
+  async imageUpload(request, response) {
+    const { dishId } = request.params;
+    const photoFilename = request.file.filename;
+
+    const dishesRepository = new DishesRepository();
+    const dishesServices = new DishesServices(dishesRepository);
+
+    await dishesServices.upload(dishId, photoFilename);
 
     return response.status(201).json();
   }

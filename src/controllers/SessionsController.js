@@ -13,18 +13,11 @@ class SessionsController {
       password,
     });
 
-    const user = session.user;
-
-    response.cookie("token", session.token, {
-      httpOnly: true,
-      sameSite: "Strict",
-      secure: true,
-      maxAge: 15 * 60 * 1000,
-    });
+    const { user, token } = session;
 
     delete user.password;
 
-    return response.status(201).json({ user });
+    return response.status(201).json({ user, token });
   }
 }
 

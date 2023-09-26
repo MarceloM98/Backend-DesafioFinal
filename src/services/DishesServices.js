@@ -1,4 +1,5 @@
 const AppError = require("../utils/AppError");
+const DiskStorage = require("../providers/DiskStorage");
 
 class DishesServices {
   constructor(dishesRepository) {
@@ -10,7 +11,7 @@ class DishesServices {
       throw new AppError("Todas as informações devem ser fornecidas.");
     }
 
-    const confirm = await this.dishesRepository.create({
+    const dish_id = await this.dishesRepository.create({
       name,
       category,
       description,
@@ -18,10 +19,10 @@ class DishesServices {
       ingredients,
     });
 
-    if (!confirm) {
+    if (!dish_id) {
       throw new AppError("Erro ao cadastrar prato", 500);
     }
-    return;
+    return dish_id;
   }
 
   async index(userQuery) {
@@ -68,6 +69,30 @@ class DishesServices {
     if (!confirmDishUpdate) {
       throw new AppError("Erro ao atualizar prato.", 500);
     }
+  }
+
+  async upload(dishId, file) {
+    const diskStorage = new DiskStorage();
+    const dish = await this.dishesRepository.show(dishId);
+
+    if (!dish) {
+      throw new AppError("Prato não encontrado", 401);
+    }
+
+    if (dish.photo) {
+      await diskStorage.deleteFile(dish.photo);
+    }
+
+    const filename = await diskStorage.saveFile(file);
+
+    dish.photo = filename;
+    delete dish.ingredients;
+    const upload = await this.dishesRepository.uploadImage(dish);
+
+    if (!upload) {
+      throw new AppError("Erro ao salvar imagem", 500);
+    }
+    return;
   }
 }
 

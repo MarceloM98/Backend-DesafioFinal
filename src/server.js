@@ -4,19 +4,14 @@ require("dotenv/config");
 const cors = require("cors");
 const express = require("express");
 const routes = require("./routes");
-const cookieParser = require("cookie-parser");
-
 const AppError = require("./utils/AppError");
+const uploadConfig = require("./configs/upload");
 
 const app = express();
-app.use(
-  cors({
-    origin: ["http://127.0.0.1:5173", "http://localhost:5173"],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(express.json());
-app.use(cookieParser());
+
+app.use("/files", express.static(uploadConfig.UPLOADS_FOLDER));
 
 app.use(routes);
 

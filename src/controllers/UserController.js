@@ -30,6 +30,17 @@ class UserController {
 
     return response.status(201).json();
   }
+
+  async validate(request, response) {
+    const { user } = request;
+
+    const userRepository = new UserRepository();
+    const userServices = new UserServices(userRepository);
+
+    const userInfo = await userServices.validate(user.id);
+
+    return response.status(201).json(userInfo);
+  }
 }
 
 module.exports = UserController;

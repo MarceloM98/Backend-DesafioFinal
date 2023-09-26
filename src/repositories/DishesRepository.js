@@ -24,7 +24,7 @@ class DishesRepository {
     if (!dish_id || !confirmIngredients) {
       return false;
     }
-    return true;
+    return dish_id;
   }
 
   async show(id) {
@@ -82,6 +82,11 @@ class DishesRepository {
     }
 
     return true;
+  }
+
+  async uploadImage(dish) {
+    const upload = await knex("dishes").update(dish).where({ id: dish.id });
+    return upload;
   }
 }
 
